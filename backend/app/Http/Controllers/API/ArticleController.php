@@ -7,19 +7,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Article;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
-    public function index()
+
+    // List dengan search
+    public function index(Request $request)
     {
+        $query = Article::query();
+
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        $articles = $query->latest()->paginate(10);
+
         return response()->json([
             'status' => true,
             'message' => 'List',
-            'data' => Article::latest()->paginate(10)
+            'data' => $articles
         ]);
     }
 
-
+    // Detail berdasarkan slug
     public function show($slug)
     {
         return response()->json([
@@ -30,13 +41,14 @@ class ArticleController extends Controller
     }
 
 
+    // Detail berdasarkan id
     public function store(Request $request)
     {
         $data = Article::create([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
             'content' => $request->content,
-            'author_id' => auth()->id
+            'author_id' => Auth::id()
         ]);
 
         return response()->json([
@@ -46,11 +58,15 @@ class ArticleController extends Controller
         ]);
     }
 
-
+    // Update berdasarkan id
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
-        $article->update($request->all());
+        $article->update([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title),
+            'content' => $request->content
+        ]);
 
         return response()->json([
             'status' => true,
@@ -60,8 +76,18 @@ class ArticleController extends Controller
     }
 
 
+    public function showById($id)
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Detail',
+            'data' => Article::find($id)
+        ]);
+    }
 
 
+
+    // Hapus berdasarkan id
     public function destroy($id)
     {
         Article::destroy($id);
