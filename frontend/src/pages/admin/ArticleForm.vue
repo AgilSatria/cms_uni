@@ -5,6 +5,8 @@
             {{ isEdit ? 'Edit Artikel' : 'Tambah Artikel' }}
         </h3>
 
+        <input type="file" @change="handleFile">
+
         <input v-model="title" class="form-input" placeholder="Judul Artikel">
 
         <textarea v-model="content" class="form-input" placeholder="Isi Artikel"></textarea>
@@ -24,6 +26,7 @@ export default {
         return {
             title: '',
             content: '',
+            image: null,
             isEdit: false,
             id: null
         }
@@ -40,6 +43,10 @@ export default {
                 this.id = this.$route.params.id
                 this.loadData()
             }
+        },
+
+        handleFile(e) {
+            this.image = e.target.files[0]
         },
 
 
@@ -60,37 +67,29 @@ export default {
 
 
 
-        // Simpan data, jika isEdit true maka update, jika false maka create
+        //        
         async simpan() {
-            try {
+            const formData = new FormData()
 
-                if (this.isEdit) {
-                    // 🔥 UPDATE
-                    await api.put('/articles/' + this.id, {
-                        title: this.title,
-                        content: this.content
-                    })
+            formData.append('title', this.title)
+            formData.append('content', this.content)
 
-                    alert('Berhasil update')
-
-                } else {
-                    // 🔥 CREATE
-                    await api.post('/articles', {
-                        title: this.title,
-                        content: this.content
-                    })
-
-                    alert('Berhasil tambah')
-                }
-
-                this.$router.push('/admin/articles')
-
-            } catch (err) {
-                console.log(err)
-                alert('Gagal')
+            if (this.image) {
+                formData.append('image', this.image)
             }
+
+            if (this.isEdit) {
+                await api.post('/articles/' + this.id + '?_method=PUT', formData)
+            } else {
+                await api.post('/articles', formData)
+            }
+
+            this.$router.push('/admin/articles')
         }
     }
+
+
+
 }
 </script>
 
@@ -115,5 +114,15 @@ export default {
     padding: 10px;
     border: none;
     border-radius: 6px;
+}
+
+.preview-img {
+    margin-top: 10px;
+    width: 140px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 </style>

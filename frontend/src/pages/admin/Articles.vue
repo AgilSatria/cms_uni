@@ -20,6 +20,7 @@
         <thead>
           <tr>
             <th>Judul</th>
+            <th>Image</th>
             <th width="200">Aksi</th>
           </tr>
         </thead>
@@ -29,6 +30,10 @@
             <router-link :to="'/article/' + item.slug">
               {{ item.title }}
             </router-link>
+
+            <td>
+              <img v-if="item.image" :src="'http://localhost:8000/storage/' + item.image" width="80">
+            </td>
 
             <td>
               <router-link :to="'/admin/articles/edit/' + item.id" class="btn-edit">Edit</router-link>

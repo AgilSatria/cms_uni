@@ -5,11 +5,24 @@ import Articles from '@/pages/admin/Articles.vue'
 import ArticleForm from '@/pages/admin/ArticleForm.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import ArticleDetail from '@/pages/ArticleDetail.vue'
+import Home from '@/pages/Home.vue'
+
 
 // routes
 const routes = [
+
+    // 🌐 PUBLIC (USER)
+    { path: '/', component: Home },
+    { path: '/article/:slug', component: ArticleDetail },
+
+
+
+
+    // Login  
     { path: '/login', component: Login },
 
+
+    //admin
     {
         path: '/admin',
         component: AdminLayout,
@@ -23,6 +36,8 @@ const routes = [
             { path: '/admin/articles/edit/:id', component: ArticleForm }
         ]
     }
+
+    
 ]
 
 // ✅ simpan ke variable router dulu

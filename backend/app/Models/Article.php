@@ -11,6 +11,7 @@ class Article extends Model
         'slug',
         'content',
         'thumbnail',
+        'image',
         'author_id'
     ];
 }

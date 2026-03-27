@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -44,10 +45,23 @@ class ArticleController extends Controller
     // Detail berdasarkan id
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+            'image' => 'nullable|image'
+        ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('articles', 'public');
+        }
+
         $data = Article::create([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
             'content' => $request->content,
+            'image' => $imagePath,
             'author_id' => Auth::id()
         ]);
 
@@ -62,6 +76,12 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('articles', 'public');
+            $article->image = $imagePath;
+        }
+
         $article->update([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
