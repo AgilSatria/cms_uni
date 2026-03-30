@@ -24,7 +24,7 @@
 
 .logo {
     font-weight: bold;
-    font-size: 19px;
+    font-size: 18px;
 }
 
 .menu a {
